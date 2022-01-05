@@ -56,7 +56,7 @@ class HeaderParser:
         Returns:
             bool: return True if the line indicated a parameter change
         """
-        match = HeaderParser.re_parameter_change.match(line)
+        match = HeaderParser.parameter_change_pattern.match(line)
         if match:
             self._parameters[match.group("ParamName")] = convert_data_types(
                 match.group("ParamValue")
