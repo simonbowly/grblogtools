@@ -21,28 +21,16 @@ expected_progress_0 = [
 
 
 example_log_1 = """
-Iteration    Objective       Primal Inf.    Dual Inf.      Time
-       0    0.0000000e+00   1.400000e+02   4.960938e+06      0s
-
-Solved in 156 iterations and 0.01 seconds
-Infeasible model
-"""
-expected_summary_1 = {}
-expected_progress_1 = [
-    {"Iteration": 0, "Objective": 0.0, "PInf": 140.0, "DInf": 4960938.0, "Time": 0}
-]
-
-example_log_2 = """
 Root relaxation: objective 4.473603e+00, 25 iterations, 0.01 seconds
 """
-expected_summary_2 = {
+expected_summary_1 = {
     "RelaxObj": 4.473603,
     "RelaxIterCount": 25,
     "RelaxTime": 0.01,
 }
-expected_progress_2 = []
+expected_progress_1 = []
 
-example_log_3 = """
+example_log_2 = """
 Root simplex log...
 
 Iteration    Objective       Primal Inf.    Dual Inf.      Time
@@ -52,12 +40,12 @@ Iteration    Objective       Primal Inf.    Dual Inf.      Time
 
 Root relaxation: objective 4.260000e+02, 473 iterations, 0.38 seconds
 """
-expected_summary_3 = {
+expected_summary_2 = {
     "RelaxObj": 426.0,
     "RelaxIterCount": 473,
     "RelaxTime": 0.38,
 }
-expected_progress_3 = [
+expected_progress_2 = [
     {"Iteration": 0, "Objective": 426.0, "PInf": 0.0, "DInf": 0.0, "Time": 33},
     {"Iteration": 473, "Objective": 426.0, "PInf": 0.0, "DInf": 0.0, "Time": 33},
     {"Iteration": 473, "Objective": 426.0, "PInf": 0.0, "DInf": 0.0, "Time": 33},
@@ -73,7 +61,7 @@ class TestSimplexLog(TestCase):
             "Iteration    Objective       Primal Inf.    Dual Inf.      Time",
             "Root relaxation: objective 4.473603e+00, 25 iterations, 0.01 seconds",
         ]
-        for i, example_log in enumerate([example_log_0, example_log_2]):
+        for i, example_log in enumerate([example_log_0, example_log_1]):
             with self.subTest(example_log=example_log):
                 simplex_parser = SimplexParser()
                 for line in example_log.strip().split("\n"):
@@ -85,18 +73,16 @@ class TestSimplexLog(TestCase):
 
     def test_get_summary_progress(self):
         for example_log, expected_summary, expected_progress in zip(
-            [example_log_0, example_log_1, example_log_2, example_log_3],
+            [example_log_0, example_log_1, example_log_2],
             [
                 expected_summary_0,
                 expected_summary_1,
                 expected_summary_2,
-                expected_summary_3,
             ],
             [
                 expected_progress_0,
                 expected_progress_1,
                 expected_progress_2,
-                expected_progress_3,
             ],
         ):
             with self.subTest(example_log=example_log):
