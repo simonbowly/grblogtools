@@ -14,11 +14,9 @@ class SimplexParser:
         r"\s*(?P<Iteration>\d+)\s+(?P<Objective>[^\s]+)\s+(?P<PInf>[^\s]+)\s+(?P<DInf>[^\s]+)\s+(?P<Time>\d+)s"
     )
 
-    # The pattern indicating the start or the termination of the simplex in case of
-    # solving an MIP. In some cases, the simplex log might only include this one
-    # line
-    simplex_mip_relaxation_pattern = re.compile(
-        r"Root relaxation: objective (?P<RelaxObj>[^,]+), (?P<RelaxIterCount>\d+) iterations, (?P<RelaxTime>[^\s]+) seconds"
+    # The pattern indicating the termination of the simplex method
+    simplex_termination_pattern = re.compile(
+        r"(Solved|Stopped) in (?P<IterCount>[^\s]+) iterations and (?P<Runtime>[^\s]+) seconds"
     )
 
     def __init__(self):
@@ -37,12 +35,6 @@ class SimplexParser:
         """
         if SimplexParser.simplex_start_pattern.match(line):
             return True
-
-        mip_relaxation_match = SimplexParser.simplex_mip_relaxation_pattern.match(line)
-        if mip_relaxation_match:
-            self._summary.update(typeconvert_groupdict(mip_relaxation_match))
-            return True
-
         return False
 
     def continue_parsing(self, line: str) -> bool:
@@ -52,26 +44,26 @@ class SimplexParser:
             line (str): A line in the log file.
 
         Returns:
-            bool: Return True if the line matches the pattern indicating progress in
-                the simplex method.
+            bool: Return True if the parser should continue parsing future log lines.
         """
         progress_match = SimplexParser.simplex_progress_pattern.match(line)
         if progress_match:
             self._progress.append(typeconvert_groupdict(progress_match))
             return True
 
-        mip_relaxation_match = SimplexParser.simplex_mip_relaxation_pattern.match(line)
-        if mip_relaxation_match:
-            self._summary.update(typeconvert_groupdict(mip_relaxation_match))
-            return False
+        simplex_termination_pattern = SimplexParser.simplex_termination_pattern.match(
+            line
+        )
+        if simplex_termination_pattern:
+            # This line does not necessary indicate that there is no future relevant
+            # log lines
+            self._summary.update(typeconvert_groupdict(simplex_termination_pattern))
+            return True
 
         return False
 
     def get_summary(self) -> dict:
-        """Return the current parsed summary.
-
-        It returns an empty dictionary when solving an LP.
-        """
+        """Return the current parsed summary."""
         return self._summary
 
     def get_progress(self) -> list:
