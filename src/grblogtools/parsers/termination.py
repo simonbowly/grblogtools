@@ -35,6 +35,9 @@ class TerminationParser:
             r"(?P<INTERRUPTED>(Interrupt request received|Solve interrupted))(?: \\(error code (?P<ErrorCode>[^\\)]+)\\))?"
         ),
         re.compile(r"Solution count (?P<SolCount>\d+)"),
+        re.compile(
+            r"Thread count was (?P<Threads>\d+) \(of (?P<Cores>\d+) available processors\)"
+        ),
     ]
 
     status = [
