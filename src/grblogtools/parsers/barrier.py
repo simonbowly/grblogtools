@@ -9,6 +9,8 @@ class BarrierParser:
         r"Iter(\s+)Primal(\s+)Dual(\s+)Primal(\s+)Dual(\s+)Compl(\s+)Time"
     )
 
+    barrier_ordering_pattern = re.compile(r"Ordering time: (?P<OrderingTime>[\d\.]+)s")
+
     # The pattern indicating the barrier progress
     barrier_progress_pattern = re.compile(
         r"\s*(?P<Iteration>\d+)(?P<Indicator>\s|\*)\s+(?P<PObj>[^\s]+)\s+(?P<DObj>[^\s]+)\s+(?P<PRes>[^\s]+)\s+(?P<DRes>[^\s]+)\s+(?P<Compl>[^\s]+)\s+(?P<Time>\d+)s"
@@ -48,6 +50,10 @@ class BarrierParser:
             bool: Return True if the given line matches the parser start patterns.
         """
         if BarrierParser.barrier_start_pattern.match(line):
+            return True
+        barrier_ordering_match = BarrierParser.barrier_ordering_pattern.match(line)
+        if barrier_ordering_match:
+            self._summary.update(typeconvert_groupdict(barrier_ordering_match))
             return True
         return False
 
