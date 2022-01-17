@@ -46,6 +46,8 @@ expected_summary_2 = {
     "SolCount": 10,
     "ObjBound": 1200006450.0,
     "MIPGap": 5e-06,
+    "Threads": 8,
+    "Cores": 8,
 }
 
 
