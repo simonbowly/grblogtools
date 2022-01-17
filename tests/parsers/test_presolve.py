@@ -126,7 +126,7 @@ expected_summary_2 = {
 }
 
 
-class TestHeaderLog(TestCase):
+class TestHeader(TestCase):
     def setUp(self):
         pass
 

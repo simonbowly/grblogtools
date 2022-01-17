@@ -143,7 +143,7 @@ expected_progress_mip = [
 ]
 
 
-class TestSimplexLog(TestCase):
+class TestContinuous(TestCase):
     def setUp(self):
         pass
 
