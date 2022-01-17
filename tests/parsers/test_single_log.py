@@ -50,15 +50,15 @@ def test_lp_barrier():
     assert parser.continuous_parser.get_summary()
     assert not parser.norel_parser.get_summary()
     assert not parser.nodelog_parser.get_summary()
-    assert parser.termination_parser.get_summary()  # fail
+    assert parser.termination_parser.get_summary()
     # Combined summary data.
     summary = parser.get_summary()
     assert summary["Version"] == "9.5.0"
     assert summary["Model"] == "savsched1"  # fail
-    assert summary["OrderingTime"] == 0.41  # fail
+    assert summary["OrderingTime"] == 0.41
     assert summary["BarIterCount"] == 17
     assert summary["Runtime"] == 4.83
-    assert summary["Status"] == "OPTIMAL"  # fail
+    assert summary["Status"] == "OPTIMAL"
 
 
 def test_lp_simplex():
