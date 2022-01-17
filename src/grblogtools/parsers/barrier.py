@@ -29,6 +29,10 @@ class BarrierParser:
         ),
     ]
 
+    barrier_interruption_pattern = re.compile(
+        r"Barrier solve interrupted - model solved by another algorithm"
+    )
+
     def __init__(self):
         """Initialize the Barrier parser."""
         self._summary = {}
@@ -73,6 +77,11 @@ class BarrierParser:
             return True
 
         return False
+
+    def is_interrupted(self, line: str) -> bool:
+        """Return True if the given line matches the interruption pattern."""
+        if BarrierParser.barrier_interruption_pattern.match(line):
+            return True
 
     def get_summary(self) -> dict:
         """Return the current parsed summary."""
