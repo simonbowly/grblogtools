@@ -18,7 +18,11 @@ def glass4_summary():
 @pytest.fixture(scope="module")
 def glass4_progress():
     """Progress data from API call."""
-    return glt.parse("data/*.log").progress()
+    return {
+        "norel": glt.parse("data/*.log").progress("norel"),
+        "rootlp": glt.parse("data/*.log").progress("rootlp"),
+        "nodelog": glt.parse("data/*.log").progress("nodelog"),
+    }
 
 
 @pytest.fixture(scope="module")
@@ -28,7 +32,11 @@ def testlog_summary():
 
 @pytest.fixture(scope="module")
 def testlog_progress():
-    return glt.parse("tests/assets/*.log").progress()
+    return {
+        "norel": glt.parse("tests/assets/*.log").progress("norel"),
+        "rootlp": glt.parse("tests/assets/*.log").progress("rootlp"),
+        "nodelog": glt.parse("tests/assets/*.log").progress("nodelog"),
+    }
 
 
 @pytest.fixture(scope="module")
