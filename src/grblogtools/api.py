@@ -59,13 +59,13 @@ class ParseResult:
         """Construct and return a summary dataframe for all parsed logs."""
         summary = pd.DataFrame(
             [
-                dict(parser.get_summary(), LogFilePath=logfile)
-                for logfile, parser in self.parsers
+                dict(parser.get_summary(), LogFilePath=logfile, LogNumber=lognumber)
+                for logfile, lognumber, parser in self.parsers
             ]
         )
         # Post-processing to match old API
         parameters = pd.DataFrame(
-            [parser.header_parser.get_parameters() for _, parser in self.parsers]
+            [parser.header_parser.get_parameters() for _, _, parser in self.parsers]
         )
         if "Seed" in parameters.columns:
             seed = parameters[["Seed"]].fillna(0).astype(int)
@@ -94,7 +94,7 @@ class ParseResult:
         """Parse a single file. The log file may contain multiple run logs."""
         parser = SingleLogParser()
         subsequent = SingleLogParser()
-        log_count = 0
+        lognumber = 1
         with open(logfile) as infile:
             lines = iter(infile)
             for line in lines:
@@ -103,16 +103,12 @@ class ParseResult:
                     if subsequent.parse(line):
                         # The current parser did not match but an empty parser
                         # matched a header line.
-                        log_count += 1
-                        self.parsers.append((f"{logfile}({log_count})", parser))
+                        self.parsers.append((logfile, lognumber, parser))
+                        lognumber += 1
                         parser = subsequent
                         subsequent = SingleLogParser()
 
-        if log_count:
-            log_count += 1
-            self.parsers.append((f"{logfile}({log_count})", parser))
-        else:
-            self.parsers.append((logfile, parser))
+        self.parsers.append((logfile, lognumber, parser))
 
 
 def parse(arg: str) -> ParseResult:
