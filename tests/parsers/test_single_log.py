@@ -21,11 +21,12 @@ def test_mip_norel_log():
     assert parser.header_parser.get_summary()
     assert parser.presolve_parser.get_summary()
     assert parser.norel_parser.get_summary()
-    assert parser.norel_parser.timeline
+    assert parser.norel_parser.get_progress()
     assert parser.continuous_parser.get_summary()
     assert parser.continuous_parser.get_progress()
     assert parser.nodelog_parser.get_summary()
-    assert parser.nodelog_parser.timeline
+    assert parser.nodelog_parser.get_progress()
+    assert parser.termination_parser.get_summary()
     # Combined summary data.
     summary = parser.get_summary()
     assert summary["Version"] == "9.1.2"
@@ -37,6 +38,13 @@ def test_mip_norel_log():
     assert summary["Status"] == "OPTIMAL"
     assert summary["ObjVal"] == 1.2000126e09
     assert summary["Runtime"] == 93.70
+
+    norel_progress = parser.get_norel_progress()
+    assert len(norel_progress) == 15
+    rootlp_progress = parser.get_rootlp_progress()
+    assert len(rootlp_progress) == 2
+    nodelog_progress = parser.get_nodelog_progress()
+    assert len(nodelog_progress) == 6
 
 
 @pytest.mark.xfail
@@ -60,6 +68,9 @@ def test_lp_barrier():
     assert summary["Runtime"] == 4.83
     assert summary["Status"] == "OPTIMAL"
 
+    rootlp_progress = parser.get_rootlp_progress()
+    assert len(rootlp_progress) == 18
+
 
 def test_lp_simplex():
     parser = SingleLogParser()
@@ -78,3 +89,6 @@ def test_lp_simplex():
     assert summary["IterCount"] == 75321
     assert summary["Runtime"] == 300.00
     assert summary["Status"] == "TIME_LIMIT"
+
+    rootlp_progress = parser.get_rootlp_progress()
+    assert len(rootlp_progress) == 60
