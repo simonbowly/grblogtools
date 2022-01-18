@@ -39,6 +39,22 @@ class ParseResult:
     def __init__(self):
         self.parsers = []
 
+    def progress(self):
+        nodelog = pd.DataFrame(
+            [row for _, parser in self.parsers for row in parser.get_nodelog_progress()]
+        )
+        norel = pd.DataFrame(
+            [row for _, parser in self.parsers for row in parser.get_norel_progress()]
+        )
+        rootlp = pd.DataFrame(
+            [row for _, parser in self.parsers for row in parser.get_rootlp_progress()]
+        )
+        return {
+            "rootlp": rootlp,
+            "norel": norel,
+            "nodelog": nodelog,
+        }
+
     def summary(self):
         """Construct and return a summary dataframe for all parsed logs."""
         summary = pd.DataFrame(
@@ -107,13 +123,23 @@ def parse(arg: str) -> ParseResult:
 
     TODO extend this, a list of patterns, or a vararg of patterns, should also work.
     """
+
     result = ParseResult()
     for logfile in glob.glob(arg):
         result.parse(logfile)
+
     return result
 
 
-def get_dataframe(logfiles):
-    """Compatibility function for the legacy API."""
+def get_dataframe(logfiles, timelines=False):
+    """Compatibility function for the legacy API.
+
+    Args:
+        logfiles (str): Path pattern to log files.
+        timeliens (bool, optional): Return the timeline progress if set to True.
+            Default False.
+    """
     result = parse(*logfiles)
-    return result.summary()
+    if not timelines:
+        return result.summary()
+    return result.summary(), result.progress()
