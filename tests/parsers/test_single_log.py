@@ -39,11 +39,11 @@ def test_mip_norel_log():
     assert summary["ObjVal"] == 1.2000126e09
     assert summary["Runtime"] == 93.70
 
-    norel_progress = parser.get_norel_progress()
+    norel_progress = parser.norel_parser.get_progress()
     assert len(norel_progress) == 15
-    rootlp_progress = parser.get_rootlp_progress()
+    rootlp_progress = parser.continuous_parser.get_progress()
     assert len(rootlp_progress) == 2
-    nodelog_progress = parser.get_nodelog_progress()
+    nodelog_progress = parser.nodelog_parser.get_progress()
     assert len(nodelog_progress) == 6
 
 
@@ -68,7 +68,7 @@ def test_lp_barrier():
     assert summary["Runtime"] == 4.83
     assert summary["Status"] == "OPTIMAL"
 
-    rootlp_progress = parser.get_rootlp_progress()
+    rootlp_progress = parser.continuous_parser.get_progress()
     assert len(rootlp_progress) == 18
 
 
@@ -90,5 +90,5 @@ def test_lp_simplex():
     assert summary["Runtime"] == 300.00
     assert summary["Status"] == "TIME_LIMIT"
 
-    rootlp_progress = parser.get_rootlp_progress()
+    rootlp_progress = parser.continuous_parser.get_progress()
     assert len(rootlp_progress) == 60
