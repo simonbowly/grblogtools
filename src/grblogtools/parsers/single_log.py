@@ -44,11 +44,11 @@ class SingleLogParser:
         return summary
 
     def get_nodelog_progress(self):
-        """Return the progress of the tree search."""
+        """Return the progress of the search tree."""
         return self.nodelog_parser.get_progress()
 
     def get_norel_progress(self):
-        """Return the progress of the No-Relaxation heuristic."""
+        """Return the progress of the norel heuristic."""
         return self.norel_parser.get_progress()
 
     def get_rootlp_progress(self):
