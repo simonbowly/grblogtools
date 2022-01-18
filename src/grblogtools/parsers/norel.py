@@ -62,5 +62,6 @@ class NoRelParser:
                 return True
         return False
 
-    def get_progress(self):
+    def get_progress(self) -> list:
+        """Return the progress of the No-Relaxation heuristic."""
         return self.timeline
