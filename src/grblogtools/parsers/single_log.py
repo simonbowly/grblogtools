@@ -43,6 +43,18 @@ class SingleLogParser:
         summary.update(self.termination_parser.get_summary())
         return summary
 
+    def get_nodelog_progress(self):
+        """Return the progress of exploring nodes in the tree search."""
+        return self.nodelog_parser.get_progress()
+
+    def get_norel_progress(self):
+        """Return the progress of the No-Relaxation heuristic."""
+        return self.norel_parser.get_progress()
+
+    def get_rootlp_progress(self):
+        """Return the progress continuous relaxation algorithm."""
+        return self.continuous_parser.get_progress()
+
     def parse(self, line: str) -> bool:
         """Parse the given log line.
 
