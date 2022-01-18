@@ -39,15 +39,33 @@ class ParseResult:
     def __init__(self):
         self.parsers = []
 
-    def progress(self):
+    def progress(self) -> dict:
+        """Return the optimization search progress.
+
+        Returns:
+            dict: A key-value pair in the form {"norel": pd.DataFrame,
+            "rootlp": pd.DataFrame, "nodelog": pd.DataFrame}.
+        """
         nodelog = pd.DataFrame(
-            [row for _, parser in self.parsers for row in parser.get_nodelog_progress()]
+            [
+                dict(row, LogFilePath=logfile, LogNumber=lognumber)
+                for logfile, lognumber, parser in self.parsers
+                for row in parser.get_nodelog_progress()
+            ]
         )
         norel = pd.DataFrame(
-            [row for _, parser in self.parsers for row in parser.get_norel_progress()]
+            [
+                dict(row, LogFilePath=logfile, LogNumber=lognumber)
+                for logfile, lognumber, parser in self.parsers
+                for row in parser.get_norel_progress()
+            ]
         )
         rootlp = pd.DataFrame(
-            [row for _, parser in self.parsers for row in parser.get_rootlp_progress()]
+            [
+                dict(row, LogFilePath=logfile, LogNumber=lognumber)
+                for logfile, lognumber, parser in self.parsers
+                for row in parser.get_rootlp_progress()
+            ]
         )
         return {
             "rootlp": rootlp,
@@ -119,7 +137,6 @@ def parse(arg: str) -> ParseResult:
 
     TODO extend this, a list of patterns, or a vararg of patterns, should also work.
     """
-
     result = ParseResult()
     for logfile in glob.glob(arg):
         result.parse(logfile)
@@ -131,9 +148,9 @@ def get_dataframe(logfiles, timelines=False):
     """Compatibility function for the legacy API.
 
     Args:
-        logfiles (str): Path pattern to log files.
-        timeliens (bool, optional): Return the timeline progress if set to True.
-            Default False.
+        logfiles (str): A glob pattern of the log files.
+        timeliens (bool, optional): Return the norel, the relaxation, and the
+            search tree progress if set to True. Defaults to False.
     """
     result = parse(*logfiles)
     if not timelines:
