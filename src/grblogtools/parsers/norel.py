@@ -61,3 +61,6 @@ class NoRelParser:
                 self.timeline.append(entry)
                 return True
         return False
+
+    def get_progress(self):
+        return self.timeline
