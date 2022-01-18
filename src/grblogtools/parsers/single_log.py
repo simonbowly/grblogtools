@@ -44,7 +44,7 @@ class SingleLogParser:
         return summary
 
     def get_nodelog_progress(self):
-        """Return the progress of exploring nodes in the tree search."""
+        """Return the progress of the tree search."""
         return self.nodelog_parser.get_progress()
 
     def get_norel_progress(self):
@@ -52,7 +52,7 @@ class SingleLogParser:
         return self.norel_parser.get_progress()
 
     def get_rootlp_progress(self):
-        """Return the progress continuous relaxation algorithm."""
+        """Return the progress of the continuous algorithm."""
         return self.continuous_parser.get_progress()
 
     def parse(self, line: str) -> bool:
@@ -64,7 +64,6 @@ class SingleLogParser:
         Returns:
             bool: Return True if the given line is matched.
         """
-
         # Initially, only check the header parser until started.
         if not self.started:
             assert self.current_parser is self.header_parser
