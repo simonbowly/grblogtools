@@ -39,39 +39,27 @@ class ParseResult:
     def __init__(self):
         self.parsers = []
 
-    def progress(self) -> dict:
-        """Return the optimization search progress.
+    def progress(self, section="nodelog") -> dict:
+        """Return the optimization search progress of the given section in the log.
 
+        Args:
+            section (str): Possible values are 'norel', 'rootlp', and 'nodelog'.
+                Defaults to 'nodelog'.
         Returns:
-            dict: A key-value pair in the form {"norel": pd.DataFrame,
-            "rootlp": pd.DataFrame, "nodelog": pd.DataFrame}.
+            pf.DataFrame: A data frame representing the progress of the given section
+                in the log.
         """
-        nodelog = pd.DataFrame(
+        return pd.DataFrame(
             [
                 dict(row, LogFilePath=logfile, LogNumber=lognumber)
                 for logfile, lognumber, parser in self.parsers
-                for row in parser.get_nodelog_progress()
+                for row in {
+                    "nodelog": parser.nodelog_parser.get_progress(),
+                    "rootlp": parser.continuous_parser.get_progress(),
+                    "norel": parser.norel_parser.get_progress(),
+                }[section]
             ]
         )
-        norel = pd.DataFrame(
-            [
-                dict(row, LogFilePath=logfile, LogNumber=lognumber)
-                for logfile, lognumber, parser in self.parsers
-                for row in parser.get_norel_progress()
-            ]
-        )
-        rootlp = pd.DataFrame(
-            [
-                dict(row, LogFilePath=logfile, LogNumber=lognumber)
-                for logfile, lognumber, parser in self.parsers
-                for row in parser.get_rootlp_progress()
-            ]
-        )
-        return {
-            "rootlp": rootlp,
-            "norel": norel,
-            "nodelog": nodelog,
-        }
 
     def summary(self):
         """Construct and return a summary dataframe for all parsed logs."""
@@ -140,7 +128,6 @@ def parse(arg: str) -> ParseResult:
     result = ParseResult()
     for logfile in glob.glob(arg):
         result.parse(logfile)
-
     return result
 
 
@@ -155,4 +142,8 @@ def get_dataframe(logfiles, timelines=False):
     result = parse(*logfiles)
     if not timelines:
         return result.summary()
-    return result.summary(), result.progress()
+    return result.summary(), dict(
+        norel=result.progress("norel"),
+        rootlp=result.progress("rootlp"),
+        nodelog=result.progress("nodelog"),
+    )
