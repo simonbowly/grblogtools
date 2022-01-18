@@ -104,3 +104,6 @@ class NodeLogParser:
         if line.strip() and not self._complete:
             self.ignored_lines += 1
         return False
+
+    def get_progress(self):
+        return self.timeline
