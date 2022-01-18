@@ -16,8 +16,19 @@ def glass4_summary():
 
 
 @pytest.fixture(scope="module")
+def glass4_progress():
+    """Progress data from API call."""
+    return glt.parse("data/*.log").progress()
+
+
+@pytest.fixture(scope="module")
 def testlog_summary():
     return glt.parse("tests/assets/*.log").summary()
+
+
+@pytest.fixture(scope="module")
+def testlog_progress():
+    return glt.parse("tests/assets/*.log").progress()
 
 
 @pytest.fixture(scope="module")
@@ -50,10 +61,36 @@ def test_summary(testlog_summary):
     )
 
 
+def test_progress(testlog_progress):
+    assert len(testlog_progress) == 3
+    assert len(testlog_progress["norel"]) == 15
+    assert set(testlog_progress["norel"].columns).issuperset(
+        {"Time", "BestBd", "Incumbent"}
+    )
+    assert len(testlog_progress["rootlp"]) == 88
+    assert set(testlog_progress["rootlp"].columns).issuperset(
+        {"Iteration", "PInf", "DInf", "PObj", "DObj"}
+    )
+    assert len(testlog_progress["nodelog"]) == 6
+    assert set(testlog_progress["nodelog"].columns).issuperset(
+        {"Depth", "IntInf", "Incumbent", "BestBd", "ItPerNode"}
+    )
+
+
 def test_summary_glass4(glass4_summary):
     assert len(glass4_summary) == 63
     assert set(glass4_summary.columns).issuperset(
         {"Status", "ObjVal", "ReadTime", "RelaxObj", "Seed"}
+    )
+
+
+def test_progress_glass4(glass4_progress):
+    assert len(glass4_progress) == 3
+    assert len(glass4_progress["norel"]) == 0
+    assert len(glass4_progress["rootlp"]) == 0
+
+    assert set(glass4_progress["nodelog"].columns).issuperset(
+        {"Depth", "IntInf", "Incumbent", "BestBd", "ItPerNode"}
     )
 
 
