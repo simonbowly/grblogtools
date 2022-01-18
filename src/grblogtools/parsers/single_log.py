@@ -43,18 +43,6 @@ class SingleLogParser:
         summary.update(self.termination_parser.get_summary())
         return summary
 
-    def get_nodelog_progress(self):
-        """Return the progress of the search tree."""
-        return self.nodelog_parser.get_progress()
-
-    def get_norel_progress(self):
-        """Return the progress of the norel heuristic."""
-        return self.norel_parser.get_progress()
-
-    def get_rootlp_progress(self):
-        """Return the progress of the continuous algorithm."""
-        return self.continuous_parser.get_progress()
-
     def parse(self, line: str) -> bool:
         """Parse the given log line.
 
@@ -85,7 +73,8 @@ class SingleLogParser:
                 return True
 
         # Check if the line matches any pattern of the termination parser.
-        self.termination_parser.parse(line)
+        if self.termination_parser.parse(line):
+            return True
 
         # Nothing matched.
         return False
