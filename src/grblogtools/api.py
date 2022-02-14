@@ -12,6 +12,7 @@ OR, use
 """
 
 import glob
+from functools import cached_property
 from pathlib import Path
 
 import pandas as pd
@@ -60,11 +61,7 @@ class ParseResult:
         )
 
     def common_log_data(self):
-        """Extract summary data which should be joined to the progress logs
-        on LogFilePath + LogNumber. This ends up separately calling summary()
-        whenever a progress log is created, so perhaps it should be cached.
-        The cache would need to be invalidated if parse() is ever called again.
-        For now I'd say the overhead is ok."""
+        """Extract summary data to be joined to progress logs."""
         common_columns = [
             "LogFilePath",
             "LogNumber",
@@ -80,6 +77,10 @@ class ParseResult:
 
     def summary(self):
         """Construct and return a summary dataframe for all parsed logs."""
+        return self.get_summary
+
+    @cached_property
+    def get_summary(self):
         summary = pd.DataFrame(
             [
                 dict(parser.get_summary(), LogFilePath=logfile, LogNumber=lognumber)
@@ -110,6 +111,9 @@ class ParseResult:
 
     def parse(self, logfile: str) -> None:
         """Parse a single file. The log file may contain multiple run logs."""
+        # Clear the cache if exists
+        self.__dict__.pop("get_summary", None)
+
         parser = SingleLogParser()
         subsequent = SingleLogParser()
         lognumber = 1

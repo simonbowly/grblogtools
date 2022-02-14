@@ -49,6 +49,16 @@ def merged_log():
         yield fp.name
 
 
+def test_clear_cache():
+    result = glt.ParseResult()
+    result.parse("tests/assets/mip.log")
+    summary, summary_cache = result.summary(), result.summary()
+    assert id(summary) == id(summary_cache)
+    result.parse("tests/assets/mip.log")
+    summary_cache_reset = result.summary()
+    assert id(summary) != id(summary_cache_reset)
+
+
 def test_merged_log(merged_log):
     summary = glt.parse(merged_log).summary()
     result = summary[["Seed", "Runtime", "LogFilePath", "LogNumber"]]
